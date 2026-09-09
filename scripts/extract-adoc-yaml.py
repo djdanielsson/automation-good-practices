@@ -32,7 +32,6 @@ class YamlBlock:
     title: str
     expectation: LintExpectation
     content: str
-    linter: str
 
 
 def slugify(path: Path) -> str:
@@ -80,12 +79,19 @@ def classify_block(lines: list[str], block_start: int, content: str) -> tuple[st
     return title, LintExpectation.PASS
 
 
-def choose_linter(content: str) -> str:
-    if re.search(r"^\s*on\s*:", content, re.MULTILINE) and re.search(
-        r"^\s*jobs\s*:", content, re.MULTILINE
+def is_ansible_content(content: str) -> bool:
+    if "ansible.builtin." in content or "ansible.legacy." in content:
+        return True
+    if re.search(
+        r"^\s*(?:hosts|tasks|roles|collections|argument_specs|dependency|"
+        r"provisioner|platforms)\s*:",
+        content,
+        re.MULTILINE,
     ):
-        return "yamllint-gha"
-    return "ansible"
+        return True
+    if re.search(r"^\s*controller_\w+\s*:", content, re.MULTILINE):
+        return True
+    return False
 
 
 def resolve_content(adoc_path: Path, content: str) -> str:
@@ -132,6 +138,9 @@ def extract_blocks(adoc_path: Path) -> list[YamlBlock]:
 
         raw_content = "\n".join(content_lines)
         content = normalize_content(resolve_content(adoc_path, raw_content))
+        if not is_ansible_content(content):
+            index += 1
+            continue
         title, expectation = classify_block(lines, block_start, raw_content)
         blocks.append(
             YamlBlock(
@@ -140,7 +149,6 @@ def extract_blocks(adoc_path: Path) -> list[YamlBlock]:
                 title=title,
                 expectation=expectation,
                 content=content,
-                linter=choose_linter(content),
             )
         )
         index += 1

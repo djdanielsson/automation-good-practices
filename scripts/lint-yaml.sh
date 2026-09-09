@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lint YAML from files or stdin and verify it passes yamllint and ansible-lint.
+# Lint Ansible YAML from files or stdin using ansible-lint (production profile).
 #
 # Usage:
 #   scripts/lint-yaml.sh [OPTIONS] [FILE ...]
@@ -12,20 +12,16 @@
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-YAMLLINT_CONFIG="${REPO_ROOT}/.yamllint"
-YAMLLINT_GHA_CONFIG="${REPO_ROOT}/scripts/yamllint-gha.yml"
 ANSIBLE_LINT_CONFIG="${REPO_ROOT}/.ansible-lint"
 EXTRACT_SCRIPT="${REPO_ROOT}/scripts/extract-adoc-yaml.py"
 
-RUN_YAMLLINT=1
-RUN_ANSIBLE_LINT=1
 LINT_DOCS=0
 TARGETS=()
 FAILED=0
 
 usage() {
   cat <<'EOF'
-Lint YAML from files or stdin and verify it passes yamllint and ansible-lint.
+Lint Ansible YAML from files or stdin using ansible-lint (production profile).
 
 Usage:
   scripts/lint-yaml.sh [OPTIONS] [FILE ...]
@@ -33,12 +29,8 @@ Usage:
   scripts/lint-yaml.sh -
 
 Options:
-  -h, --help           Show this help message
-  --docs               Lint YAML embedded in AsciiDoc documentation
-  --yamllint-only      Run only yamllint
-  --ansible-lint-only  Run only ansible-lint
-  --no-ansible-lint    Skip ansible-lint (alias for --yamllint-only)
-  --no-yamllint        Skip yamllint (alias for --ansible-lint-only)
+  -h, --help  Show this help message
+  --docs      Lint Ansible YAML embedded in AsciiDoc documentation
 
 When no FILE arguments are given and stdin is not a terminal, YAML is read from
 stdin. Use "-" to read from stdin explicitly.
@@ -46,21 +38,44 @@ stdin. Use "-" to read from stdin explicitly.
 Examples:
   scripts/lint-yaml.sh inventories/inventory_loop_hosts/playbook_good.yml
   scripts/lint-yaml.sh --docs
-  ansible-playbook --syntax-check -o /dev/null playbook.yml 2>/dev/null \
-    || scripts/lint-yaml.sh playbook.yml
   cat generated.yml | scripts/lint-yaml.sh
 EOF
 }
 
-run_yamllint() {
-  local config="$1"
+require_command() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "error: required command not found: $1" >&2
+    exit 127
+  fi
+}
+
+lint_target() {
+  local label="$1"
   local path="$2"
-  yamllint -c "$config" "$path"
+  local rc=0
+  local cleanup_path=""
+
+  if [[ "$path" == "-" ]]; then
+    cleanup_path="$(mktemp "${TMPDIR:-/tmp}/lint-yaml.XXXXXX")"
+    cat >"$cleanup_path"
+    path="$cleanup_path"
+    label="stdin"
+  fi
+
+  echo "==> ansible-lint: ${label}"
+  if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" "$path"; then
+    rc=1
+  fi
+
+  if [[ -n "$cleanup_path" ]]; then
+    rm -f "$cleanup_path"
+  fi
+
+  return "$rc"
 }
 
 lint_docs() {
   local tmpdir cleanup_path=""
-  local yaml_path metadata_path label linter
 
   require_command python3
   tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/lint-yaml-docs.XXXXXX")"
@@ -91,83 +106,17 @@ title = metadata.get("title") or "(untitled example)"
 print(f"{source}:{metadata['line']} {title}")
 PY
       )"
-      linter="$(
-        python3 - <<'PY' "$metadata_path"
-import json
-import sys
-from pathlib import Path
-
-metadata = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-print(metadata.get("linter", "ansible"))
-PY
-      )"
     else
       label="$yaml_path"
-      linter="ansible"
     fi
 
-    if [[ "$RUN_YAMLLINT" -eq 1 ]]; then
-      echo "==> yamllint: ${label}"
-      if [[ "$linter" == "yamllint-gha" ]]; then
-        if ! run_yamllint "$YAMLLINT_GHA_CONFIG" "$yaml_path"; then
-          FAILED=1
-        fi
-      elif ! run_yamllint "$YAMLLINT_CONFIG" "$yaml_path"; then
-        FAILED=1
-      fi
-    fi
-
-    if [[ "$RUN_ANSIBLE_LINT" -eq 1 && "$linter" == "ansible" ]]; then
-      echo "==> ansible-lint: ${label}"
-      if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" "$yaml_path"; then
-        FAILED=1
-      fi
+    if ! lint_target "$label" "$yaml_path"; then
+      FAILED=1
     fi
   done
   shopt -u nullglob
 
   rm -rf "$cleanup_path"
-}
-
-require_command() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "error: required command not found: $1" >&2
-    exit 127
-  fi
-}
-
-lint_target() {
-  local label="$1"
-  local path="$2"
-  local rc=0
-  local cleanup_path=""
-
-  if [[ "$path" == "-" ]]; then
-    cleanup_path="$(mktemp "${TMPDIR:-/tmp}/lint-yaml.XXXXXX")"
-    cat >"$cleanup_path"
-    path="$cleanup_path"
-    label="stdin"
-  fi
-
-  if [[ "$RUN_YAMLLINT" -eq 1 ]]; then
-    echo "==> yamllint: ${label}"
-    if ! run_yamllint "$YAMLLINT_CONFIG" "$path"; then
-      rc=1
-    fi
-  fi
-
-  if [[ "$RUN_ANSIBLE_LINT" -eq 1 ]]; then
-    echo "==> ansible-lint: ${label}"
-    if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" "$path"; then
-      rc=1
-    fi
-  fi
-
-  if [[ -n "$cleanup_path" ]]; then
-    rm -f "$cleanup_path"
-  fi
-
-  return "$rc"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -178,12 +127,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --docs)
       LINT_DOCS=1
-      ;;
-    --yamllint-only|--no-ansible-lint)
-      RUN_ANSIBLE_LINT=0
-      ;;
-    --ansible-lint-only|--no-yamllint)
-      RUN_YAMLLINT=0
       ;;
     --)
       shift
@@ -205,12 +148,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ "$RUN_YAMLLINT" -eq 1 ]]; then
-  require_command yamllint
-fi
-if [[ "$RUN_ANSIBLE_LINT" -eq 1 ]]; then
-  require_command ansible-lint
-fi
+require_command ansible-lint
 
 if [[ "$LINT_DOCS" -eq 1 ]]; then
   lint_docs
