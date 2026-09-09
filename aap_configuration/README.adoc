@@ -226,18 +226,24 @@ Version upgrades should be deliberate and tested.
 
 Examples::
 +
+.Do this:
 [source,yaml]
 ----
-# Good - pinned to exact version
 collections:
   - name: infra.aap_configuration
     version: "2.9.0"
-
-# Bad - unpinned, will break unexpectedly
+----
++
+.Don't do this:
+[source,yaml]
+----
 collections:
   - name: infra.aap_configuration
-
-# Bad - range allows untested versions
+----
++
+.Don't do this:
+[source,yaml]
+----
 collections:
   - name: infra.aap_configuration
     version: ">=2.0.0"

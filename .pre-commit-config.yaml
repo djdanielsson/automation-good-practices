@@ -10,3 +10,24 @@ repos:
     rev: v8.18.2
     hooks:
       - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: lint-yaml
+        name: Lint Ansible YAML (files and documentation)
+        entry: bash scripts/lint-all-yaml.sh
+        language: python
+        additional_dependencies:
+          - yamllint
+          - ansible-lint
+        pass_filenames: false
+        files: |
+          (?x)^(
+            \.ansible-lint|
+            \.yamllint|
+            scripts/lint-yaml\.sh|
+            scripts/lint-all-yaml\.sh|
+            scripts/extract-adoc-yaml\.py|
+            scripts/yamllint-gha\.yml|
+            .*\.(yml|yaml|adoc)
+          )$

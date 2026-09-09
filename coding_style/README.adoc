@@ -334,7 +334,8 @@ You have a `list` of `dict`, and you want to filter out elements that have the k
 tasks:
   - name: Do something
     some.module:
-      param: "{{ list_of_dict | rejectattr('type', 'search', '^bad_type$') | list }}"
+      param: >-
+        {{ list_of_dict | rejectattr('type', 'search', '^bad_type$') | list }}
 ----
 
 .Don't do this:

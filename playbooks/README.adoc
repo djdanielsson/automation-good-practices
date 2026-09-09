@@ -96,7 +96,7 @@ You see that each role can be skipped/run individually, but also that the tags `
 +
 The same approach is also possible with `include_role` but requires additionally to `apply` the same tags to the role's tasks, which doesn't make the code easier to read:
 +
-.An example of playbook including roles with tags
+.Don't do this (prefer import_role):
 [source,yaml]
 ----
 - name: a playbook can be a list of roles included with tags applied

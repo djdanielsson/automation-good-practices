@@ -23,9 +23,9 @@ A single committed secret can compromise entire environments and is nearly impos
 
 Examples::
 +
+.Do this:
 [source,yaml]
 ----
-# Good - reference environment variable
 - name: Configure API
   ansible.builtin.template:
     src: config.j2
@@ -33,15 +33,17 @@ Examples::
   vars:
     api_token: "{{ lookup('env', 'API_TOKEN') }}"
 
-# Good - use ansible-vault encrypted variable
 - name: Configure database
   ansible.builtin.template:
     src: db.conf.j2
     dest: /etc/app/db.conf
   vars:
     db_password: "{{ vault_db_password }}"
-
-# Bad - hardcoded secret
+----
++
+.Don't do this:
+[source,yaml]
+----
 - name: Configure API
   ansible.builtin.template:
     src: config.j2

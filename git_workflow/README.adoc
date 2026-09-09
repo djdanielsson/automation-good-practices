@@ -196,9 +196,9 @@ This violates every principle of controlled change management.
 
 Examples::
 +
+.Do this:
 [source,yaml]
 ----
-# Good - specific version references
 controller_projects:
   - name: "Prod Automation"
     scm_branch: "26.1.5-0"
@@ -206,8 +206,11 @@ controller_projects:
 controller_execution_environments:
   - name: "Prod EE"
     image: "quay.io/myorg/automation-ee:26.1.5-0"
-
-# Bad - mutable references
+----
++
+.Don't do this:
+[source,yaml]
+----
 controller_projects:
   - name: "Prod Automation"
     scm_branch: "main"
