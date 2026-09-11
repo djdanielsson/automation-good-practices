@@ -28,24 +28,16 @@ For a collection "mycollection", two roles exist. "alpha" and "beta".  For this 
 and would have to be defined in one's inventory. The no_log variable does have defaults defined, and thus only needs to be defined if the default
 is being overwritten.
 +
-.Alpha defaults/main.yml
+.Do this: Alpha defaults/main.yml
 [source,yaml]
 ----
-# specific role variables
-alpha_job_name: 'some text'
-# collection wide variables
-alpha_controller_username: "{{ mycollection_controller_username }}"
-alpha_no_log: "{{ mycollection_no_log | default('true') }}"
+include::../examples/collections/do/alpha_defaults_main_yml/defaults/main.yml[]
 ----
 +
-.Beta defaults/main.yml
+.Do this: Beta defaults/main.yml
 [source,yaml]
 ----
-# specific role variables
-beta_job_name: 'some other text'
-# collection wide variables
-beta_controller_username: "{{ mycollection_controller_username }}"
-beta_no_log: "{{ mycollection_no_log | default('false') }}"
+include::../examples/collections/do/beta_defaults_main_yml/defaults/main.yml[]
 ----
 ====
 

@@ -13,8 +13,14 @@ repos:
 
   - repo: local
     hooks:
+      - id: check-adoc-examples
+        name: Check AsciiDoc example conventions
+        entry: python3 scripts/check-adoc-examples.py
+        language: system
+        pass_filenames: false
+        files: \.adoc$
       - id: lint-yaml
-        name: Lint Ansible YAML (files and documentation)
+        name: Lint Ansible YAML
         entry: bash scripts/lint-all-yaml.sh
         language: python
         additional_dependencies:
@@ -23,9 +29,12 @@ repos:
         files: |
           (?x)^(
             \.ansible-lint|
-            \.yamllint|
             scripts/lint-yaml\.sh|
             scripts/lint-all-yaml\.sh|
-            scripts/extract-adoc-yaml\.py|
+            scripts/check-adoc-examples\.py|
+            examples/|
+            playbooks/|
+            roles/|
+            inventories/|
             .*\.(yml|yaml|adoc)
           )$

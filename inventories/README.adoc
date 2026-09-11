@@ -193,7 +193,7 @@ include::inventory_loop_hosts/inventory_bad/groups_and_hosts[]
 +
 Each manager has a list of hosts, which can look like this:
 +
-.List of hosts in `inventory_bad/host_vars/manager_a/provision.yml`
+.Don't do this: List of hosts in `inventory_bad/host_vars/manager_a/provision.yml`
 [source,yaml]
 ----
 include::inventory_loop_hosts/inventory_bad/host_vars/manager_a/provision.yml[]
@@ -201,7 +201,7 @@ include::inventory_loop_hosts/inventory_bad/host_vars/manager_a/provision.yml[]
 +
 So that we can loop over the list in this way:
 +
-.The "bad" way to loop over hosts
+.Don't do this: The "bad" way to loop over hosts
 [source,yaml]
 ----
 include::inventory_loop_hosts/playbook_bad.yml[]
@@ -230,7 +230,7 @@ manager_hostname: manager_a
 +
 And the provisioning playbook now runs in parallel and can be limited to specific hosts:
 +
-.The "good" way to loop over hosts
+.Do this: The "good" way to loop over hosts
 [source,yaml]
 ----
 include::inventory_loop_hosts/playbook_good.yml[]

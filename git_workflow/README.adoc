@@ -199,25 +199,13 @@ Examples::
 .Do this:
 [source,yaml]
 ----
-controller_projects:
-  - name: "Prod Automation"
-    scm_branch: "26.1.5-0"
-
-controller_execution_environments:
-  - name: "Prod EE"
-    image: "quay.io/myorg/automation-ee:26.1.5-0"
+include::../examples/git_workflow/do/do_this.yml[]
 ----
 +
 .Don't do this:
 [source,yaml]
 ----
-controller_projects:
-  - name: "Prod Automation"
-    scm_branch: "main"
-
-controller_execution_environments:
-  - name: "Prod EE"
-    image: "quay.io/myorg/automation-ee:latest"
+include::../examples/git_workflow/bad/don_t_do_this.yml[]
 ----
 ====
 
@@ -267,7 +255,8 @@ Branch protection ensures every change goes through quality gates before reachin
 
 Examples::
 +
-[source,yaml]
+.Do this:
+[source,yaml,lint=skip]
 ----
 # GitHub branch protection settings
 required_pull_request_reviews:

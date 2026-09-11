@@ -74,3 +74,6 @@ preview:
 
 lint-yaml:
 	@scripts/lint-all-yaml.sh
+
+check-adoc-examples:
+	@python3 scripts/check-adoc-examples.py

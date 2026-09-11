@@ -1,19 +1,40 @@
 #!/usr/bin/env bash
-# Lint standalone Ansible YAML and YAML embedded in AsciiDoc documentation.
+# Lint Ansible YAML under known example and content directories.
 
-set -euo pipefail
+set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LINT_SCRIPT="${REPO_ROOT}/scripts/lint-yaml.sh"
-YAML_LINT_DIRS=(playbooks roles inventories)
+ANSIBLE_LINT_CONFIG="${REPO_ROOT}/.ansible-lint"
+LINT_DIRS=(playbooks roles inventories examples)
+FAILED=0
 
 cd "$REPO_ROOT"
 
-while IFS= read -r -d '' yaml_file; do
-  "$LINT_SCRIPT" "$yaml_file"
-done < <(
-  find "${YAML_LINT_DIRS[@]}" -type f \( -name '*.yml' -o -name '*.yaml' \) \
-    -print0 2>/dev/null | sort -z
-)
+if ! command -v ansible-lint >/dev/null 2>&1; then
+  echo "error: required command not found: ansible-lint" >&2
+  exit 127
+fi
 
-"$LINT_SCRIPT" --docs
+existing_dirs=()
+for dir in "${LINT_DIRS[@]}"; do
+  if [[ -d "$dir" ]]; then
+    existing_dirs+=("$dir")
+  fi
+done
+
+if [[ ${#existing_dirs[@]} -eq 0 ]]; then
+  echo "lint-yaml: no lint directories found" >&2
+  exit 1
+fi
+
+echo "==> ansible-lint: ${existing_dirs[*]}"
+if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" "${existing_dirs[@]}"; then
+  FAILED=1
+fi
+
+if [[ "$FAILED" -eq 1 ]]; then
+  echo "lint-yaml: ansible-lint reported failures" >&2
+  exit 1
+fi
+
+echo "lint-yaml: all targets passed"

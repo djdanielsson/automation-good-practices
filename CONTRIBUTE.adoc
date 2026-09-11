@@ -24,18 +24,10 @@ Rationale:: This is the rationale
 
 Examples:: These are examples
 +
-.A mini playbook example
+.Do this: A mini playbook example
 [source,yaml]
 ----
----
-- name: A mini example of playbook
-  hosts: all
-  gather_facts: false
-  become: false
-  tasks:
-    - name: Say what we all think
-      ansible.builtin.debug:
-        msg: asciidoctor is {{ my_private_thoughts }}
+include::examples/contribute/do/a_mini_playbook_example/playbook.yml[]
 ----
 +
 Even more examples...
@@ -83,18 +75,10 @@ Rationale:: This is the rationale
 
 Examples:: These are examples
 +
-.A mini playbook example
+.Do this: A mini playbook example
 [source,yaml]
 ----
----
-- name: A mini example of playbook
-  hosts: all
-  gather_facts: false
-  become: false
-  tasks:
-    - name: Say what we all think
-      ansible.builtin.debug:
-        msg: asciidoctor is {{ my_private_thoughts }}
+include::examples/contribute/do/a_mini_playbook_example/playbook.yml[]
 ----
 +
 Even more examples...

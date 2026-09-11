@@ -35,47 +35,14 @@ Examples::
 .Do this:
 [source,yaml]
 ----
----
-- name: Perform collection automation
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Perform several actions
-      ansible.builtin.include_role:
-        name: mycollection.run
-      vars:
-        actions:
-          - name: thing_1
-            vars:
-              thing_1_var_1: 1
-              thing_1_var_2: 2
-          - name: thing_2
-            vars:
-              thing_2_var_1: 1
-              thing_2_var_2: 2
+include::../examples/roles/do/do_this/playbook.yml[]
 ----
 
 * In this example, the user must maintain awareness of the structure of the `thing_1` and `thing_2` roles, and the order of operations necessary for these roles to be used together. If the implementation of these roles is changed, the user will need to modify their playbook.
 .Don't do this:
 [source,yaml]
 ----
-- hosts: all
-  gather_facts: false
-  tasks:
-  - name: Do thing_1
-    include_role:
-      name: mycollection.thing_1
-      tasks_from: thing_1.yaml
-      vars:
-        thing_1_var_1: 1
-        thing_1_var_2: 2
-  - name: Do thing_2
-    include_role:
-      name: mycollection.thing_2
-      tasks_from: thing_2.yaml
-      vars:
-        thing_2_var_1: 1
-        thing_2_var_2: 2
+include::../examples/roles/bad/don_t_do_this.yml[]
 ----
 
 ====
@@ -230,37 +197,17 @@ Explanations:: You normally use `vars/main.yml` (automatically included) to set 
 If some variables need to be parameterized according to distribution and version (name of packages, configuration file paths, names of services), use this in the beginning of your `tasks/main.yml`:
 Examples::
 
+.Do this:
 [source,yaml]
 ----
-- name: Ensure ansible_facts used by role
-  ansible.builtin.setup:
-    gather_subset: min
-  when: >-
-    __rolename_required_facts
-    | difference(ansible_facts.keys() | list) | length > 0
-
-- name: Set platform/version specific variables
-  ansible.builtin.include_vars: "{{ __rolename_vars_file }}"
-  loop:
-    - "{{ ansible_facts['os_family'] }}.yml"
-    - "{{ ansible_facts['distribution'] }}.yml"
-    - >-
-      {{ ansible_facts['distribution'] }}_{{
-      ansible_facts['distribution_major_version'] }}.yml
-    - >-
-      {{ ansible_facts['distribution'] }}_{{
-      ansible_facts['distribution_version'] }}.yml
-  vars:
-    __rolename_vars_file: "{{ role_path }}/vars/{{ item }}"
-  when: __rolename_vars_file is file
+include::../examples/roles/do/example_03/tasks/main.yml[]
 ----
 
 * Add this as the first task in `tasks/main.yml`:
 +
 [source,yaml]
 ----
-- name: Set platform/version specific variables
-  ansible.builtin.include_tasks: tasks/set_vars.yml
+include::../examples/roles/do/example_04/tasks/main.yml[]
 ----
 
 * Add files to `vars/` for the required OS platforms and versions.
@@ -285,26 +232,10 @@ If `distribution` is `RedHat` then `os_family` will also be `RedHat`, and `vars/
 This is usually not a problem - you will be replacing the variable with the same value, and the performance hit is negligible.
 If this is a problem, construct the file list as a list variable, and filter the variable passed to `loop` using the `unique` filter (which preserves the order):
 
+.Do this:
 [source,yaml]
 ----
-- name: Set vars file list
-  ansible.builtin.set_fact:
-    __rolename_vars_file_list:
-      - "{{ ansible_facts['os_family'] }}.yml"
-      - "{{ ansible_facts['distribution'] }}.yml"
-      - >-
-        {{ ansible_facts['distribution'] }}_{{
-        ansible_facts['distribution_major_version'] }}.yml
-      - >-
-        {{ ansible_facts['distribution'] }}_{{
-        ansible_facts['distribution_version'] }}.yml
-
-- name: Set platform/version specific variables
-  ansible.builtin.include_vars: "{{ __rolename_vars_file }}"
-  loop: "{{ __rolename_vars_file_list | unique | list }}"
-  vars:
-    __rolename_vars_file: "{{ role_path }}/vars/{{ item }}"
-  when: __rolename_vars_file is file
+include::../examples/roles/do/example_05/tasks/main.yml[]
 ----
 
 Or define your `__rolename_vars_file_list` in your `vars/main.yml`.
@@ -318,22 +249,10 @@ Gathering facts can be expensive, so gather *only* the facts required by the rol
 Using a separate task file for `tasks/set_vars.yml` allows role integration tests to access the internal variables.
 For example, if the role developer wants to pre-populate a VM with the packages used by the role, the following tasks can be used:
 
+.Do this:
 [source,yaml]
 ----
----
-- name: Prepare test packages
-  hosts: all
-  tasks:
-    - name: Set platform/version specific variables
-      ansible.builtin.include_role:
-        name: my.fqcn.rolename
-        tasks_from: set_vars.yml
-        public: true
-
-    - name: Install test packages
-      ansible.builtin.package:
-        name: "{{ __rolename_packages }}"
-        state: present
+include::../examples/roles/do/example_06/playbook.yml[]
 ----
 
 In this way, the role developer does not have to copy and maintain a separate list of role packages.
@@ -346,25 +265,10 @@ Platform specific tasks, however, are different.
 You probably want to perform platform specific tasks once, for the most specific match.
 In that case, use `lookup('first_found')` with the file list in order of most specific to least specific, including a "default":
 
+.Do this:
 [source,yaml]
 ----
-- name: Perform platform/version specific tasks
-  ansible.builtin.include_tasks: >-
-    {{ lookup('first_found', __rolename_ff_params) }}
-  vars:
-    __rolename_ff_params:
-      files:
-        - >-
-          {{ ansible_facts['distribution'] }}_{{
-          ansible_facts['distribution_version'] }}.yml
-        - >-
-          {{ ansible_facts['distribution'] }}_{{
-          ansible_facts['distribution_major_version'] }}.yml
-        - "{{ ansible_facts['distribution'] }}.yml"
-        - "{{ ansible_facts['os_family'] }}.yml"
-        - "default.yml"
-      paths:
-        - "{{ role_path }}/tasks/setup"
+include::../examples/roles/do/example_07/tasks/main.yml[]
 ----
 
 Then you would provide `tasks/setup/default.yml` to do the generic setup, and e.g. `tasks/setup/Fedora.yml` to do the Fedora specific setup.
@@ -372,21 +276,10 @@ The `tasks/setup/default.yml` is required in order to use `lookup('first_found')
 
 If you want to have the "use first file found" semantics, but do not want to have to provide a default file, add `skip: true`:
 
+.Do this:
 [source,yaml]
 ----
-- name: Perform platform/version specific tasks
-  ansible.builtin.include_tasks: >-
-    {{ lookup('first_found', __rolename_ff_params) }}
-  vars:
-    __rolename_ff_params:
-      files:
-        - >-
-          {{ ansible_facts['distribution'] }}_{{
-          ansible_facts['distribution_version'] }}.yml
-        - "{{ ansible_facts['os_family'] }}.yml"
-      paths:
-        - "{{ role_path }}/tasks/setup"
-      skip: true
+include::../examples/roles/do/example_08/tasks/main.yml[]
 ----
 
 *NOTE*:
@@ -408,10 +301,10 @@ idioms.
 ====
 Use a task file per provider and include it from the main task file, like this example from `storage:`
 
+.Do this:
 [source,yaml]
 ----
-- name: Include the appropriate provider tasks
-  ansible.builtin.include_tasks: "main_{{ storage_provider }}.yml"
+include::../examples/roles/do/example_09/tasks/main.yml[]
 ----
 
 The same process should be used for variables (not defaults, as defaults can
@@ -540,14 +433,13 @@ Adding a prefix, in combination with the role's name automatically added by Ansi
 
 Examples:: In a role with one `tasks/main.yml` task file, including `tasks/sub.yml`, the tasks in this last file would be named as follows:
 +
-.A prefixed task in a sub-tasks file
+.Do this: A prefixed task in a sub-tasks file
 [source,yaml]
 ----
-- name: sub | Some task description
-  mytask: [...]
+include::prefix_subtasks/roles/prefix_show/tasks/sub_prefix.yml[tag=prefix,indent=0]
 ----
 +
-The log output will then look something like `TASK [myrole : sub | Some task description] ****`, which makes it very clear where the task is coming from.
+The log output will then look something like `TASK [prefix_show : sub_prefix | Show where we are] ****`, which makes it very clear where the task is coming from.
 +
 TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
 ====
@@ -565,32 +457,10 @@ By ensuring roles receive accurate input data and mitigating common issues, we c
 
 Examples:: The specification is defined in the meta/argument_specs.yml. For more details on how to write the specification, refer to https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html#specification-format.
 +
-.Argument Specification file that validates the arguments provided to the role.
+.Do this: Argument Specification file that validates the arguments provided to the role.
 [source,yaml]
 ----
-argument_specs:
-  main:
-    short_description: Role description.
-    options:
-      string_arg1:
-        description: string argument description.
-        type: "str"
-        default: "x"
-        choices: ["x", "y"]
-      dict_arg1:
-        description: dict argument description.
-        type: dict
-        required: true
-        options:
-          key1:
-            description: key1 description.
-            type: int
-          key2:
-            description: key2 description.
-            type: str
-          key3:
-            description: key3 description.
-            type: dict
+include::../examples/roles/do/argument_specification_file_that_validates_the_arguments_provided_to_the_role/meta/argument_specs.yml[]
 ----
 ====
 
