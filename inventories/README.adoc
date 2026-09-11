@@ -215,16 +215,16 @@ Compare then with the recommended approach, with a slightly different structure:
 .Content of the "good" `groups_and_hosts` file
 [source,ini]
 ----
-include::inventory_loop_hosts/inventory_good/groups_and_hosts[]
+include::inventory_loop_hosts/good/inventory/groups_and_hosts[]
 ----
 +
 It is now the hosts and their groups which carry the relevant information, it is not anymore parked in one single list (and can be used for other purposes):
 +
 .The "good" variable structure
 ----
-$ cat inventory_good/host_vars/host1/provision.yml
+$ cat good/inventory/host_vars/host1/provision.yml
 provision_value: uno
-$ cat inventory_good/group_vars/managed_hosts_a/provision.yml
+$ cat good/inventory/group_vars/managed_hosts_a/provision.yml
 manager_hostname: manager_a
 ----
 +
@@ -233,7 +233,7 @@ And the provisioning playbook now runs in parallel and can be limited to specifi
 .The "good" way to loop over hosts
 [source,yaml]
 ----
-include::inventory_loop_hosts/playbook_good.yml[]
+include::inventory_loop_hosts/good/playbook.yml[]
 ----
 +
 The result isn't overwhelming in this simple setup but you would of course better appreciate if the provisioning would take half an hour instead of a fraction of seconds:
@@ -241,13 +241,13 @@ The result isn't overwhelming in this simple setup but you would of course bette
 .Comparison of the execution times between the "good" and the "bad" implementation
 ----
 $ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
-	ansible-playbook -i inventory_bad playbook_bad.yml
+	ansible-playbook -i bad/inventory bad/playbook.yml
 Saturday 23 October 2021  13:11:45 +0200 (0:00:00.040)       0:00:00.040 ******
 Saturday 23 October 2021  13:11:45 +0200 (0:00:00.858)       0:00:00.899 ******
 ===============================================================================
 create some file to simulate an API call to provision a host ------------ 0.86s
 $ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
-	ansible-playbook -i inventory_good playbook_good.yml
+	ansible-playbook -i good/inventory good/playbook.yml
 Saturday 23 October 2021  13:11:55 +0200 (0:00:00.040)       0:00:00.040 ******
 Saturday 23 October 2021  13:11:56 +0200 (0:00:00.569)       0:00:00.610 ******
 ===============================================================================

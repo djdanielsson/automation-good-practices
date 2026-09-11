@@ -396,7 +396,7 @@ Assuming we have the following inventory (not according to recommended practices
 .An inventory with two clusters
 [source,ini]
 ----
-include::dont_use_groups/inventory[]
+include::dont_use_groups/bad/inventory[]
 ----
 +
 We can then use one of the following three approaches in our role (here as playbook, again for sake of simplicity):

@@ -74,5 +74,3 @@ preview:
 
 lint-yaml:
 	@scripts/lint-all-yaml.sh
-
-.PHONY: view print spell lint-yaml release preview

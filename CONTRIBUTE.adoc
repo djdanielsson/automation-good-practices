@@ -91,7 +91,7 @@ Examples:: These are examples
 .A mini playbook example
 [source,yaml]
 ----
-\include::examples/contribute/do/a_mini_playbook_example/playbook.yml[]
+include::examples/contribute/do/a_mini_playbook_example/playbook.yml[]
 ----
 +
 Even more examples...

@@ -133,13 +133,13 @@ group_vars/all/
 .Shared resource file (credentials.yml)
 [source,yaml]
 ----
-include::../examples/aap_configuration/do/shared_resource_file_credentials_yml.yml[]
+include::../examples/aap_configuration/do/credentials.yml[]
 ----
 +
 .JT bundle file (jt_eng_deploy_webapp.yml)
 [source,yaml]
 ----
-include::../examples/aap_configuration/do/jt_bundle_file_jt_eng_deploy_webapp_yml.yml[]
+include::../examples/aap_configuration/do/jt_eng_deploy_webapp.yml[]
 ----
 ====
 
@@ -185,19 +185,19 @@ Examples::
 +
 [source,yaml]
 ----
-include::../examples/aap_configuration/do/do_this/collections/requirements.yml[]
+include::../examples/aap_configuration/do/collections/requirements.yml[]
 ----
 +
 .Don't do this:
 [source,yaml]
 ----
-include::../examples/aap_configuration/bad/don_t_do_this/collections/requirements.yml[]
+include::../examples/aap_configuration/bad/unpinned/collections/requirements.yml[]
 ----
 +
 .Don't do this:
 [source,yaml]
 ----
-include::../examples/aap_configuration/bad/don_t_do_this/collections/requirements.yml[]
+include::../examples/aap_configuration/bad/range_version/collections/requirements.yml[]
 ----
 ====
 
