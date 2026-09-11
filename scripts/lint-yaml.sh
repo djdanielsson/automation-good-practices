@@ -33,7 +33,7 @@ lint_target() {
   fi
 
   echo "==> ansible-lint: ${label}"
-  if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" "$path"; then
+  if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" --exclude .github/ "$path"; then
     if [[ -n "$cleanup_path" ]]; then
       rm -f "$cleanup_path"
     fi

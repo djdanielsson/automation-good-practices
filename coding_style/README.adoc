@@ -173,24 +173,13 @@ Prefer `!unsafe` when the string contains multiple brace sequences — such as r
 .Do this:
 [source,yaml]
 ----
-vars:
-  # !unsafe is the clearest option for complex patterns with multiple braces
-  prometheus_query: !unsafe "rate(http_requests_total{job='api'}[5m])"
-
-  # both approaches work for simple single-expression cases
-  grafana_template: !unsafe "{{ server }}"
-  grafana_template_alt: "{{ '{{ server }}' }}"
+include::../examples/coding_style/do/unsafe/vars/example.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-vars:
-  # Jinja2 will try to evaluate {job='api'} and fail
-  prometheus_query: "rate(http_requests_total{job='api'}[5m])"
-
-  # resolves the 'server' variable instead of passing the literal string {{ server }}
-  grafana_template: "{{ server }}"
+include::../examples/coding_style/bad/unsafe/vars/example.yml[]
 ----
 ====
 
@@ -218,6 +207,9 @@ include::../examples/coding_style/do/fqcn/tasks/main.yml[]
 ----
 include::../examples/coding_style/bad/fqcn/tasks/main.yml[]
 ----
+====
+
+* Ensure that all tasks are idempotent.
 * https://github.com/ansible/ansible/issues/10374[Ansible variables use lazy evaluation.]
 * Prefer the command module over the shell module unless you explicitly need shell functionality such as, e.g., piping.
   Even better, use a dedicated module, if it exists.

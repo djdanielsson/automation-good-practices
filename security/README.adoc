@@ -143,6 +143,7 @@ Examples::
 ----
 include::../examples/security/do/example_03.yml[]
 ----
++
 ====
 
 == Implement regular secret rotation

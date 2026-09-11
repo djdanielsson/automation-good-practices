@@ -28,7 +28,7 @@ if [[ ${#existing_dirs[@]} -eq 0 ]]; then
 fi
 
 echo "==> ansible-lint: ${existing_dirs[*]}"
-if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" "${existing_dirs[@]}"; then
+if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" --exclude .github/ "${existing_dirs[@]}"; then
   FAILED=1
 fi
 
