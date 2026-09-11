@@ -199,13 +199,13 @@ Examples::
 .Do this:
 [source,yaml]
 ----
-include::../examples/git_workflow/do/do_this.yml[]
+include::../examples/git_workflow/do/pinned_versions.yml[]
 ----
 +
 .Don't do this:
 [source,yaml]
 ----
-include::../examples/git_workflow/bad/don_t_do_this.yml[]
+include::../examples/git_workflow/bad/mutable_versions.yml[]
 ----
 ====
 
@@ -255,7 +255,6 @@ Branch protection ensures every change goes through quality gates before reachin
 
 Examples::
 +
-.Do this:
 [source,yaml,lint=skip]
 ----
 # GitHub branch protection settings

@@ -14,11 +14,7 @@ exclude_paths:
   - .vscode/
   - changelogs/
   - images/
-  - examples/**/bad/**
-  - playbooks/playbook_role_tags/playbook_include_bad.yml
-  - roles/dont_use_groups/playbook.yml
-  - inventories/inventory_loop_hosts/inventory_bad/
-  - inventories/inventory_loop_hosts/playbook_bad.yml
+  - "**/bad/**"
 
 # parseable: true
 # quiet: true

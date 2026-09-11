@@ -138,10 +138,9 @@ Embedding credentials in playbooks or variable files bypasses all of these secur
 
 Examples::
 +
-.Do this:
 [source,yaml]
 ----
-include::../examples/security/do/example_03.yml[]
+include::../examples/security/do/aap_credentials.yml[]
 ----
 +
 ====

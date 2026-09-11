@@ -13,7 +13,7 @@ This, in turn, also helps with the maintainability as there is only a single pla
 
 Examples::
 +
-.Do this: An example of playbook containing only roles
+.An example of playbook containing only roles
 [source,yaml]
 ----
 include::playbook_role_tags/playbook_roles_only.yml[]
@@ -52,7 +52,7 @@ Important is that your users don't need to learn the right sequence of tags nece
 
 Examples::
 +
-.Do this: An example of playbook importing roles with tags
+.An example of playbook importing roles with tags
 [source,yaml]
 ----
 include::playbook_role_tags/playbook_import.yml[]
@@ -62,10 +62,10 @@ You see that each role can be skipped/run individually, but also that the tags `
 +
 The same approach is also possible with `include_role` but requires additionally to `apply` the same tags to the role's tasks, which doesn't make the code easier to read:
 +
-.Don't do this (prefer import_role):
+.An example using include_role with tags applied
 [source,yaml]
 ----
-include::playbook_role_tags/playbook_include_bad.yml[]
+include::playbook_role_tags/playbook_include_role.yml[]
 ----
 
 ====
@@ -81,9 +81,9 @@ However, log messages will clutter your output, which can confuse users with non
 
 Examples::
 +
-.Do this: Adding verbosity to debug messages
+.Adding verbosity to debug messages
 [source,yaml]
 ----
-include::playbook_role_tags/debug_verbosity.yml[]
+include::debug_verbosity.yml[]
 ----
 ====

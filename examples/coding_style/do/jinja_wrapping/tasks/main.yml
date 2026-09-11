@@ -13,7 +13,8 @@
       a_very.long_variable.name |
       somefilter('with', 'many', 'arguments') |
       another_filter | list }}"
-  when:     a_very.long_variable.name |
+  when: \
+    a_very.long_variable.name |
     somefilter('with', 'many', 'arguments') |
     another_filter | list | length > 0
 
@@ -26,4 +27,7 @@
 
 - name: Use a very long URL
   ansible.builtin.uri:
-    url: "https://{{ my_very_long_value_for_hostname }}:      {{ my_very_long_value_for_port }}      {{ my_very_long_value_for_uri }}?      {{ my_very_long_value_for_query }}"
+    url: "https://{{ my_very_long_value_for_hostname }}:\
+      {{ my_very_long_value_for_port }}\
+      {{ my_very_long_value_for_uri }}?\
+      {{ my_very_long_value_for_query }}"

@@ -56,7 +56,6 @@ CI pipelines serve as the authoritative quality gate that cannot be bypassed, en
 
 Examples::
 +
-.Do this:
 [source,yaml,lint=skip]
 ----
 # .github/workflows/pre-commit.yml
@@ -86,7 +85,6 @@ Fast feedback encourages the short-lived branches and frequent integration that 
 
 Examples::
 +
-.Do this:
 [source,yaml,lint=skip]
 ----
 name: Fast CI Example
@@ -197,7 +195,6 @@ They also enforce team conventions consistently without relying on reviewer memo
 
 Examples::
 +
-.Do this:
 [source,yaml,lint=skip]
 ----
 # Example PR validation workflow
@@ -226,7 +223,6 @@ They enable deterministic rollback (deploy exactly the previous manifest), audit
 
 Examples::
 +
-.Do this:
 [source,yaml,lint=skip]
 ----
 # releases/release-26.1.5-0.yaml

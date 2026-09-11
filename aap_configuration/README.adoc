@@ -17,15 +17,14 @@ Manual UI changes create configuration drift, are not auditable, and cannot be r
 
 Examples::
 +
-.Do this:
 [source,yaml]
 ----
-include::../examples/aap_configuration/do/example_01.yml[]
+include::../examples/aap_configuration/do/collections/requirements.yml[]
 ----
 +
 [source,yaml]
 ----
-include::../examples/aap_configuration/do/example_02.yml[]
+include::../examples/aap_configuration/do/dispatch_playbook.yml[]
 ----
 +
 The `dispatch` role automatically reads variables from `group_vars` and `host_vars`, applies configuration in the correct dependency order, handles idempotency, and provides clear output of changes made.
@@ -131,13 +130,13 @@ group_vars/all/
 └── jt_ops_backup_db_daily.yml   # EE + Project + JT bundle
 ----
 +
-.Do this: Shared resource file (credentials.yml)
+.Shared resource file (credentials.yml)
 [source,yaml]
 ----
 include::../examples/aap_configuration/do/shared_resource_file_credentials_yml.yml[]
 ----
 +
-.Do this: JT bundle file (jt_eng_deploy_webapp.yml)
+.JT bundle file (jt_eng_deploy_webapp.yml)
 [source,yaml]
 ----
 include::../examples/aap_configuration/do/jt_bundle_file_jt_eng_deploy_webapp_yml.yml[]
@@ -159,10 +158,9 @@ A secret committed to a CaC repo is visible to everyone with read access to the 
 
 Examples::
 +
-.Do this:
 [source,yaml]
 ----
-include::../examples/aap_configuration/do/example_05.yml[]
+include::../examples/aap_configuration/do/vault_credential.yml[]
 ----
 +
 [source,bash]
@@ -185,7 +183,6 @@ Version upgrades should be deliberate and tested.
 
 Examples::
 +
-.Do this:
 [source,yaml]
 ----
 include::../examples/aap_configuration/do/do_this/collections/requirements.yml[]
@@ -246,7 +243,6 @@ CI/CD pipelines ensure that every configuration change goes through the same val
 
 Examples::
 +
-.Do this:
 [source,yaml,lint=skip]
 ----
 # Example CI/CD pipeline step (generic)

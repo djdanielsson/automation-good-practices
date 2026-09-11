@@ -188,23 +188,23 @@ Our first idea could be to define managers and hosts first in an inventory:
 .Content of the "bad" `groups_and_hosts` file
 [source,ini]
 ----
-include::inventory_loop_hosts/inventory_bad/groups_and_hosts[]
+include::inventory_loop_hosts/bad/inventory/groups_and_hosts[]
 ----
 +
 Each manager has a list of hosts, which can look like this:
 +
-.Don't do this: List of hosts in `inventory_bad/host_vars/manager_a/provision.yml`
+.List of hosts in `bad/inventory/host_vars/manager_a/provision.yml`
 [source,yaml]
 ----
-include::inventory_loop_hosts/inventory_bad/host_vars/manager_a/provision.yml[]
+include::inventory_loop_hosts/bad/inventory/host_vars/manager_a/provision.yml[]
 ----
 +
 So that we can loop over the list in this way:
 +
-.Don't do this: The "bad" way to loop over hosts
+.The "bad" way to loop over hosts
 [source,yaml]
 ----
-include::inventory_loop_hosts/playbook_bad.yml[]
+include::inventory_loop_hosts/bad/playbook.yml[]
 ----
 +
 TIP: check the resulting files using e.g. `head -n-0 /tmp/bad_*`.
@@ -230,7 +230,7 @@ manager_hostname: manager_a
 +
 And the provisioning playbook now runs in parallel and can be limited to specific hosts:
 +
-.Do this: The "good" way to loop over hosts
+.The "good" way to loop over hosts
 [source,yaml]
 ----
 include::inventory_loop_hosts/playbook_good.yml[]

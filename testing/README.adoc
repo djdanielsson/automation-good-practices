@@ -100,10 +100,10 @@ molecule destroy     # Clean up when done
 10. destroy       - Destroy instances
 ----
 +
-.Do this: Example molecule.yml configuration
+.Example molecule.yml configuration
 [source,yaml]
 ----
-include::../examples/testing/do/example_molecule_yml_configuration.yml[]
+include::../examples/testing/do/molecule/default/molecule.yml[]
 ----
 ====
 

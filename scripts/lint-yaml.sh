@@ -16,7 +16,7 @@ Usage:
   scripts/lint-yaml.sh [FILE ...]
   scripts/lint-yaml.sh -
 
-When no FILE arguments are given, lint all repository example directories.
+When no FILE arguments are given, lint the full repository.
 EOF
 }
 
@@ -33,7 +33,7 @@ lint_target() {
   fi
 
   echo "==> ansible-lint: ${label}"
-  if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" --exclude .github/ "$path"; then
+  if ! ansible-lint -c "$ANSIBLE_LINT_CONFIG" "$path"; then
     if [[ -n "$cleanup_path" ]]; then
       rm -f "$cleanup_path"
     fi

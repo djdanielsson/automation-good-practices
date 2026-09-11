@@ -60,7 +60,7 @@ ansible-lint defaults to 82 characters per line - see (https://ansible-lint.read
 You don't want to have to skip `yaml[line-length]` in your `.ansible-lint`, or litter your code with `# noqa yaml[line-length]`.
 Examples:: there are multiple ways to avoid long lines but the most generic one is to use the YAML folding sign (`>-`):
 +
-.Do this: Usage of the YAML folding sign
+.Usage of the YAML folding sign
 [source,yaml]
 ----
 include::../examples/coding_style/do/usage_of_the_yaml_folding_sign/tasks/main.yml[]
